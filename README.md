@@ -1,6 +1,6 @@
 # TacoMake
 
-Generic C++ makefile for medium or simple single executable compilation.
+Generic C++ makefile for simple single executable compilation.
 
 # README for TacoMake Project
 
