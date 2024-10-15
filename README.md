@@ -15,7 +15,7 @@ Welcome to the **TacoMake** project! This guide will help you set up and use the
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Doner357/TacoMake.git
    ```
 2. Ensure the `Makefile` is at the root level and all other files are in the `tacomake` folder.
 3. Or download the project as a ZIP file from the GitHub website by clicking on the "Code" button and selecting "Download ZIP". Extract the contents after downloading.
