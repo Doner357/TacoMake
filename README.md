@@ -138,6 +138,7 @@ This project is primarily targeted at C++ developers working on small to medium-
 ## Important Notes
 
 - This makefile system only allows compiling a single executable file. The source code containing the `main` function must be placed in the directory specified by `src_dir` for it to be detected.
+- Currently only source files with a ".cpp" or ".c" suffix are allowed (more suffix support may be added in the future).
 - Since this project uses native `make` functions to traverse directories, empty directories will be ignored. Please ensure that the absence of empty directories is acceptable for your use case.
 - This makefile system has been thoroughly tested only on **Windows 11**. It should work on some Linux systems (tested successfully on **Debian GNU/Linux 12**), but extensive testing on other environments has not been conducted.
 
