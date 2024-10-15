@@ -55,14 +55,19 @@ The `Makefile` file allows you to configure essential paths and settings:
 
   - `src_dir`: Directory for source files. This directory is where your main source code files are located.
     - *Example*: `src_dir := src`
+
   - `include_dir`: Directory for header files. Include files are placed here for organizing reusable code.
     - *Example*: `include_dir := include`
+
   - `assets_dir`: Directory containing resources for the program, such as images, configuration files, and dynamic link libraries (`.dll` or `.so`). During `make run`, these assets will be copied to the `build` directory.
     - *Example*: `assets_dir := assets`
+
   - `target_dir`: Directory for build output. This is where the compiled executable will be placed.
     - *Example*: `target_dir := build`
+
   - `obj_dir`: Directory for compiled object files. Keeping object files separate helps manage the compilation process more cleanly.
     - *Example*: `obj_dir := objs`
+
   - `lib_dir`: Directory for libraries used by the program. This is where additional static or dynamic libraries can be placed for linking.
     - *Example*: `lib_dir := lib`
 
@@ -72,16 +77,22 @@ The `Makefile` file allows you to configure essential paths and settings:
 
   - `compiler`: Specifies the compiler to use (e.g., `g++`).
     - *Example*: `compiler := g++`
+
   - `cpp_ver`: Sets the C++ version standard (e.g., `c++20`).
     - *Example*: `cpp_ver := c++20`
+
   - `compile_flags`: Flags for the compiler to control warnings and debugging.
     - *Example*: `compile_flags := -g -Wall -Wextra -MMD -MP`
+
   - `macros`: Defines any macros that should be passed to the compiler. Note that the values in `macros` will automatically be prefixed with `-D`, so you only need to provide the macro name.
     - *Example*: `macros := DEBUG`
+
   - `linker_flags`: Flags for the linker, if additional options are needed during linking.
     - *Example*: `linker_flags := -static-libgcc`
+
   - `libraries`: Specifies any libraries to link against, which are automatically prefixed with `-l` (e.g., `pthread`).
     - *Example*: `libraries := pthread opengl32 gdi32`
+    
       Note: Only add the library names in the `libraries` variable without the `lib` prefix or `.a`/`.lib` suffix, such as `opengl32` or `gdi32`.
 
 Modify these paths and settings as needed to match your project structure.
