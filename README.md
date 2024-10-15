@@ -135,10 +135,11 @@ In the **example** folder, you'll find source code from the popular **"Ray Traci
 
 This project is primarily targeted at C++ developers working on small to medium-sized projects who are looking for a simple and efficient way to manage their build process. It is particularly useful for developers who are new to using `make` or those who need a lightweight solution for single executable projects.
 
-## Important Notes
+## Important Notes and Liminations
 
 - This makefile system only allows compiling a single executable file. The source code containing the `main` function must be placed in the directory specified by `src_dir` for it to be detected.
 - Currently only source files with a ".cpp" or ".c" suffix are allowed (more suffix support may be added in the future).
+- Directory names containing spaces are strongly discouraged (In fact this always causes problems, consider fixing it in the future).
 - Since this project uses native `make` functions to traverse directories, empty directories will be ignored. Please ensure that the absence of empty directories is acceptable for your use case.
 - This makefile system has been thoroughly tested only on **Windows 11**. It should work on some Linux systems (tested successfully on **Debian GNU/Linux 12**), but extensive testing on other environments has not been conducted.
 
