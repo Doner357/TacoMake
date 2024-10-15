@@ -92,7 +92,7 @@ The `Makefile` file allows you to configure essential paths and settings:
 
   - `libraries`: Specifies any libraries to link against, which are automatically prefixed with `-l` (e.g., `pthread`).
     - *Example*: `libraries := pthread opengl32 gdi32`
-    
+
       Note: Only add the library names in the `libraries` variable without the `lib` prefix or `.a`/`.lib` suffix, such as `opengl32` or `gdi32`.
 
 Modify these paths and settings as needed to match your project structure.
@@ -129,9 +129,7 @@ In the **example** folder, you'll find source code from the popular **"Ray Traci
 - Execute `make run` to compile and run it, observing how assets are handled.
 - Test the **`make clean`** and **`make clean-all`** commands to understand their effects.
 
-## Additional Examples
-
-Consider adding more practical examples to illustrate different use cases of this build system. For instance, include a simple C++ project that highlights how to link multiple libraries or how to organize a larger codebase. Providing these examples will make it easier for new users to understand the full potential of `TacoMake`.
+(Due to platform issues, adding link examples is not considered.)
 
 ## Target Audience
 
