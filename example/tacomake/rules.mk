@@ -2,28 +2,27 @@ ifndef TACO_RULES_MK
 TACO_RULES_MK := 1
 
 # ---- Unchangeable ----
+override src_suffix_s := $(sort $(src_suffix))
+
 override target := $(call fixexecutable,$(target))
 
 # Append directory to target file
 override build_target := $(target_dir)/$(target)
 
 # Source files
-override cpp_src := $(call rwildcard,$(src_dir),*.cpp)
-override c_src   := $(call rwildcard,$(src_dir),*.c)
-override srcs     := $(cpp_src) $(c_src)
+override srcs := $(foreach d,$(src_suffix_s),$(call rwildcard,$(src_dir),*$d))
 
 # Object files
-override objs := $(patsubst %.cpp,$(obj_dir)/%.o,$(cpp_src))
-override objs += $(patsubst %.c,$(obj_dir)/%.o,$(c_src))
+override objs := $(foreach d,$(src_suffix_s),$(patsubst %$d,$(obj_dir)/%.o,$(filter %$d,$(srcs))))
 
 # Dependency files
 override deps := $(objs:.o=.d)
 
 # Determine final compile flags
-override compile_flags += -std=$(cpp_ver) -I$(include_dir) $(addprefix -D,$(macros))
+override compile_flags += -std=$(cpp_ver) $(addprefix -I,$(include_dir)) $(addprefix -D,$(macros))
 
 # Determine final link flags
-override linker_flags += $(call libdirflags,$(lib_dir)) $(addprefix -l,$(libraries))
+override linker_flags += $(foreach d,$(lib_dir),$(call libdirflags,$d)) $(addprefix -l,$(libraries))
 
 # Assets
 override assets := $(call filewildcard,$(assets_dir))
@@ -36,8 +35,6 @@ override objs_mirror_dirs := $(call extrdir,$(objs))
 # Integrate directories need to be created
 override required_dirs := $(sort $(target_dir) $(target_assets_dirS) $(objs_mirror_dirs))
 
-# Default target
-all: $(build_target)
 
 # Rule to link executable
 $(build_target): $(objs) | $(target_dir)
@@ -45,22 +42,21 @@ $(build_target): $(objs) | $(target_dir)
 	@$(compiler) -o $@ $(objs) $(linker_flags)
 	$(call msg,Building finished!)
 
-# Rule to compile source files into object files
-$(obj_dir)/%.o: %.cpp | $(objs_mirror_dirs)
-	$(call msg,Compiling C++ source file to object file: $<)
-	@$(compiler) $(compile_flags) -c $< -o $@
-	$(call msg,Compiling finished!)
+# Dynamic compile rule for different source suffix
+define compile
+$$(obj_dir)/%.o: %$1 | $$(objs_mirror_dirs)
+	$$(call msg,Compiling source file to object file: $$<)
+	@$$(compiler) $$(compile_flags) -c $$< -o $$@
+	$$(call msg,Compiling finished!)
 
-# Rule to compile C source files into object files
-$(obj_dir)/%.o: %.c | $(objs_mirror_dirs)
-	$(call msg,Compiling C source file to object file: $<)
-	@$(compiler) $(compile_flags) -c $< -o $@
-	$(call msg,Compiling finished!)
+endef
+# Compile
+$(eval $(foreach d,$(src_suffix_s),$(call compile,$d)))
 
 # Ensure the build directory exists
 $(required_dirs):
-	$(info Deteced missing directory "$@"$(comma) create new one...)
-	@$(call mkdir,$(call fixpath, $@))
+	$(call msg,Deteced missing directory "$@"$(comma) create new one...)
+	@$(call mkdir,$(call fixpath,$@))
 
 
 # Include dependency files if they exist

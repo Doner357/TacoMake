@@ -54,46 +54,62 @@ The `Makefile` file allows you to configure essential paths and settings:
 - **Directories**:
 
   - `src_dir`: Directory for source files. This directory is where your main source code files are located.
+
     - *Example*: `src_dir := src`
 
   - `include_dir`: Directory for header files. Include files are placed here for organizing reusable code.
+
     - *Example*: `include_dir := include`
 
   - `assets_dir`: Directory containing resources for the program, such as images, configuration files, and dynamic link libraries (`.dll` or `.so`). During `make run`, these assets will be copied to the `build` directory.
+
     - *Example*: `assets_dir := assets`
 
   - `target_dir`: Directory for build output. This is where the compiled executable will be placed.
+
     - *Example*: `target_dir := build`
 
   - `obj_dir`: Directory for compiled object files. Keeping object files separate helps manage the compilation process more cleanly.
+
     - *Example*: `obj_dir := objs`
 
   - `lib_dir`: Directory for libraries used by the program. This is where additional static or dynamic libraries can be placed for linking.
+
     - *Example*: `lib_dir := lib`
 
   Note: All directories in `lib_dir` will automatically be added with `-L` during the linking stage. Therefore, you only need to specify the library names in the `libraries` variable.
 
+  The directories specified in `src_dir`, `include_dir`, `assets_dir`, and `lib_dir` will be created in the root directory when running the `make init` command.
+
 - **Compiler Settings**:
 
   - `compiler`: Specifies the compiler to use (e.g., `g++`).
+
     - *Example*: `compiler := g++`
 
   - `cpp_ver`: Sets the C++ version standard (e.g., `c++20`).
+
     - *Example*: `cpp_ver := c++20`
 
   - `compile_flags`: Flags for the compiler to control warnings and debugging.
+
     - *Example*: `compile_flags := -g -Wall -Wextra -MMD -MP`
 
   - `macros`: Defines any macros that should be passed to the compiler. Note that the values in `macros` will automatically be prefixed with `-D`, so you only need to provide the macro name.
+
     - *Example*: `macros := DEBUG`
 
   - `linker_flags`: Flags for the linker, if additional options are needed during linking.
+
     - *Example*: `linker_flags := -static-libgcc`
 
   - `libraries`: Specifies any libraries to link against, which are automatically prefixed with `-l` (e.g., `pthread`).
+
     - *Example*: `libraries := pthread opengl32 gdi32`
 
-      Note: Only add the library names in the `libraries` variable without the `lib` prefix or `.a`/`.lib` suffix, such as `opengl32` or `gdi32`.
+    Note: Only add the library names in the `libraries` variable without the `lib` prefix or `.a`/`.lib` suffix, such as `opengl32` or `gdi32`.
+
+  - `src_suffix`: Used to specify which file extensions in the `src_dir` folder should be treated as source files. Ensure that the specified extensions are supported by the compiler being used. Unless necessary, it is not recommended for users to modify this setting. Default extensions are `.cpp`, `.cxx`, `.cc`, `.cp`, `.c++`, `.c`.
 
 Modify these paths and settings as needed to match your project structure.
 
@@ -135,10 +151,9 @@ In the **example** folder, you'll find source code from the popular **"Ray Traci
 
 This project is primarily targeted at C++ developers working on small to medium-sized projects who are looking for a simple and efficient way to manage their build process. It is particularly useful for developers who are new to using `make` or those who need a lightweight solution for single executable projects.
 
-## Important Notes and Liminations
+## Important Notes and Limitations
 
 - This makefile system only allows compiling a single executable file. The source code containing the `main` function must be placed in the directory specified by `src_dir` for it to be detected.
-- Currently only source files with a ".cpp" or ".c" suffix are allowed (more suffix support may be added in the future).
 - Directory names containing spaces are strongly discouraged (In fact this always causes problems, consider fixing it in the future).
 - Since this project uses native `make` functions to traverse directories, empty directories will be ignored. Please ensure that the absence of empty directories is acceptable for your use case.
 - This makefile system has been thoroughly tested only on **Windows 11**. It should work on some Linux systems (tested successfully on **Debian GNU/Linux 12**), but extensive testing on other environments has not been conducted.

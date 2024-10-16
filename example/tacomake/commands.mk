@@ -3,6 +3,9 @@ TACO_COMMANDS_MK := 1
 
 include tacomake/rules.mk
 
+# Default target
+all: $(build_target)
+
 ####################################################
 # -- init --
 # This call help you to create the directories
@@ -38,7 +41,7 @@ run: $(build_target) $(target_assets)
 	$(call msg,-------------------------- End Running --------------------------)
 
 $(target_dir)/%: $(assets_dir)/% | $(target_assets_dirS)
-	$(info Copy asset "$^" into target "$@"...)
+	$(call msg,Copy asset "$^" into target "$@"...)
 	$(call cp,$(call fixpath,$^),$(call fixpath,$@))
 
 
@@ -78,8 +81,12 @@ clean-all:
 	$(call msg,Done!)
 	@cd .
 
+debug:
+	$(info $(srcs))
+	$(info $(foreach d,$(src_suffix),$(call compile,$d)))
+
 
 # Phony targets
-.PHONY: all init run clean clean-all
+.PHONY: all init run clean clean-all debug
 
 endif

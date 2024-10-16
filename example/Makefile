@@ -1,6 +1,3 @@
-include tacomake/platform.mk
-include tacomake/functions.mk
-
 ####################################################
 # Compile
 ####################################################
@@ -35,8 +32,14 @@ linker_flags :=
 # So just type the libraries name you want to link, like "gdi32 opengl32 pthread".
 libraries := 
 
-####################################################
-####################################################
 
+# Source file suffix configurations (Not recommended to change)
+src_suffix := .cpp .cxx .cc .cp .c++ .c
+
+
+####################################################
+####################################################
+include tacomake/platform.mk
+include tacomake/functions.mk
 include tacomake/rules.mk
 include tacomake/commands.mk
