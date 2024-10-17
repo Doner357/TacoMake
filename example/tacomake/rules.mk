@@ -44,7 +44,7 @@ $(build_target): $(objs) | $(target_dir)
 
 # Dynamic compile rule for different source suffix
 define compile
-$$(obj_dir)/%.o: %$1 | $$(objs_mirror_dirs)
+$$(obj_dir)/%.o: %$1 Makefile | $$(objs_mirror_dirs)
 	$$(call msg,Compiling source file to object file: $$<)
 	@$$(compiler) $$(compile_flags) -c $$< -o $$@
 	$$(call msg,Compiling finished!)

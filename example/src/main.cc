@@ -38,7 +38,7 @@ int main() {
     world.add(std::make_shared<quad>(point3(555,0,0), vec3(0,0,555), vec3(0,555,0), green));
     world.add(std::make_shared<quad>(point3(0,0,555), vec3(0,0,-555), vec3(0,555,0), red));
     world.add(std::make_shared<quad>(point3(0,555,0), vec3(555,0,0), vec3(0,0,555), white));
-    world.add(std::make_shared<quad>(point3(0,0,555), vec3(555,0,0), vec3(0,0,-555), white));
+    world.add(std::make_shared<quad>(point3(0,0,555), vec3(555,0,0), vec3(0,0,-555), map));
     world.add(std::make_shared<quad>(point3(555,0,555), vec3(-555,0,0), vec3(0,555,0), white));
 
     // Light
@@ -52,7 +52,7 @@ int main() {
 
     // Glass Sphere
     auto glass = std::make_shared<dielectric>(1.5);
-    world.add(std::make_shared<sphere>(point3(190,90,190), 90, map));
+    world.add(std::make_shared<sphere>(point3(190,90,190), 90, glass));
 
     // Light Sources
     auto empty_material = std::shared_ptr<material>();
@@ -77,7 +77,7 @@ int main() {
 
     cam.defocus_angle = 0;
 
-    cam.render(world, lights, "cornell_box_with_anti-acne_color_function");
+    cam.render(world, lights, "image");
 
     return 0;
 }

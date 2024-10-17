@@ -81,12 +81,8 @@ clean-all:
 	$(call msg,Done!)
 	@cd .
 
-debug:
-	$(info $(srcs))
-	$(info $(foreach d,$(src_suffix),$(call compile,$d)))
-
 
 # Phony targets
-.PHONY: all init run clean clean-all debug
+.PHONY: all init run clean clean-all
 
 endif
