@@ -20,6 +20,13 @@ obj_dir     := objs
 # Directory contains resources for program
 assets_dir := assets
 
+# If you need to connect to external include and library directories,
+# note that these directories won't be created when using "make init".
+# Note: When assigning multiple values to the same variable in a Makefile,
+# remember to add a backslash (\) at the end of each line.
+ext_include_dir := 
+ext_lib_dir     := 
+
 # Compiler flags
 compile_flags := -g -Wall -Wextra -MMD -MP
 
@@ -34,7 +41,7 @@ libraries :=
 
 
 # Source file suffix configurations (Not recommended to change)
-src_suffix := .cpp .cxx .cc .cp .c++ .c
+src_suffix := .cpp .cxx .cp .c++ .CPP .cc .c .C
 
 
 ####################################################

@@ -51,6 +51,8 @@ example/
 
 The `Makefile` file allows you to configure essential paths and settings:
 
+Note: When assigning multiple values to the same variable in a Makefile, remember to add a backslash ( \ ) at the end of each line.
+
 - **Directories**:
 
   - `src_dir`: Directory for source files. This directory is where your main source code files are located.
@@ -81,6 +83,16 @@ The `Makefile` file allows you to configure essential paths and settings:
 
   The directories specified in `src_dir`, `include_dir`, `assets_dir`, and `lib_dir` will be created in the root directory when running the `make init` command.
 
+- **External Directories**:
+
+  - `ext_include_dir`: Specifies external include directories that are not part of the project's internal structure. These directories won't be created when using the `make init` command, so ensure they exist and are correctly set.
+
+    - *Example*: `ext_include_dir := /path/to/external/includes`
+
+  - `ext_lib_dir`: Specifies external library directories for linking against libraries outside of the project. Similar to `ext_include_dir`, these directories will not be created during the `make init` command and must be managed separately.
+
+    - *Example*: `ext_lib_dir := /path/to/external/libs`
+
 - **Compiler Settings**:
 
   - `compiler`: Specifies the compiler to use (e.g., `g++`).
@@ -109,7 +121,7 @@ The `Makefile` file allows you to configure essential paths and settings:
 
     Note: Only add the library names in the `libraries` variable without the `lib` prefix or `.a`/`.lib` suffix, such as `opengl32` or `gdi32`.
 
-  - `src_suffix`: Used to specify which file extensions in the `src_dir` folder should be treated as source files. Ensure that the specified extensions are supported by the compiler being used. Unless necessary, it is not recommended for users to modify this setting. Default extensions are `.cpp`, `.cxx`, `.cc`, `.cp`, `.c++`, `.c`.
+  - `src_suffix`: Used to specify which file extensions in the `src_dir` folder should be treated as source files. Ensure that the specified extensions are supported by the compiler being used. Unless necessary, it is not recommended for users to modify this setting. Default extensions are `.cpp`, `.cxx`, `.cp`, `.c++`, `.CPP`, `.cc`, `.c`, `.C`.
 
 Modify these paths and settings as needed to match your project structure.
 

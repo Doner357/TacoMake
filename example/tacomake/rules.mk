@@ -10,19 +10,19 @@ override target := $(call fixexecutable,$(target))
 override build_target := $(target_dir)/$(target)
 
 # Source files
-override srcs := $(foreach d,$(src_suffix_s),$(call rwildcard,$(src_dir),*$d))
+override srcs := $(sort $(foreach d,$(src_suffix_s),$(call rwildcard,$(src_dir),*$d)))
 
 # Object files
-override objs := $(foreach d,$(src_suffix_s),$(patsubst %$d,$(obj_dir)/%.o,$(filter %$d,$(srcs))))
+override objs := $(sort $(foreach d,$(src_suffix_s),$(patsubst %$d,$(obj_dir)/%.o,$(filter %$d,$(srcs)))))
 
 # Dependency files
 override deps := $(objs:.o=.d)
 
 # Determine final compile flags
-override compile_flags += -std=$(cpp_ver) $(addprefix -I,$(include_dir)) $(addprefix -D,$(macros))
+override compile_flags += -std=$(cpp_ver) $(addprefix -I,$(include_dir) $(ext_include_dir)) $(addprefix -D,$(macros))
 
 # Determine final link flags
-override linker_flags += $(foreach d,$(lib_dir),$(call libdirflags,$d)) $(addprefix -l,$(libraries))
+override linker_flags += $(foreach d,$(lib_dir) $(ext_lib_dir),$(call libdirflags,$d)) $(addprefix -l,$(libraries))
 
 # Assets
 override assets := $(call filewildcard,$(assets_dir))
