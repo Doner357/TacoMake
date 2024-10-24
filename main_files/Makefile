@@ -2,7 +2,7 @@
 # Compile
 ####################################################
 # Target file
-target := PathTracer
+target := main
 
 # CPP compiler
 compiler := g++
