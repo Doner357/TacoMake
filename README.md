@@ -1,187 +1,404 @@
 # TacoMake
 
-Generic C++ makefile for simple single executable compilation.
+TacoMake is a small, copy-and-use GNU Make setup for C and C++ projects that build one executable.
 
-# README for TacoMake Project
+It is meant for projects that are too small for a full build system, but still need a clean workflow for source files, headers, object files, assets, external libraries, and platform-specific executable names.
 
-Welcome to the **TacoMake** project! This guide will help you set up and use the build system efficiently. Follow along to learn how to configure your environment and take advantage of various make commands to manage your project.
+## Features
 
-## Prerequisites
+- Builds a single executable from all source files under `src`
+- Recursively discovers source files and mirrors their paths under `objs`
+- Generates and includes dependency files with `-MMD -MP`
+- Copies files from `assets` into `build` when running the program
+- Supports internal and external include/library directories
+- Adds `.exe` automatically on Windows
+- Provides simple commands: `make`, `make run`, `make init`, `make clean`, and `make clean-all`
 
-- **GNU Make** version **4.4.1** or higher is required.
-- This project is well-suited for development in **VS Code** as a C++ project due to its convenient environment for managing multiple files and its compatibility with the `make` utility.
+## Requirements
 
-## Setup Instructions
+- GNU Make
+- A C or C++ compiler, such as `g++`
+- A shell environment where `make` can run
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Doner357/TacoMake.git
-   ```
-2. Ensure the `Makefile` is at the root level and all other files are in the `tacomake` folder.
-3. Or download the project as a ZIP file from the GitHub website by clicking on the "Code" button and selecting "Download ZIP". Extract the contents after downloading.
+The project has mainly been used on Windows, and has also been tested on Debian GNU/Linux 12. Other Unix-like environments may work, but are not the primary target.
 
-## Project Structure
+## Repository Layout
 
-The repository contains two key folders:
-
-- **main\_files**: This folder includes the main makefile components and instructions.
-- **example**: Contains code examples for learning purposes, particularly from the "Raytracing The Rest of Your Life" series.
-
-Upon cloning the repository, you will find the following structure:
-
+```text
+TacoMake/
++-- main_files/
+|   +-- Makefile
+|   +-- tacomake/
+|       +-- commands.mk
+|       +-- functions.mk
+|       +-- platform.mk
+|       +-- rules.mk
++-- example/
+|   +-- Makefile
+|   +-- tacomake/
+|   +-- src/
+|   +-- include/
+|   +-- assets/
++-- LICENSE
++-- README.md
 ```
-main_files/
-    tacomake/
-        commands.mk
-        functions.mk
-        platform.mk
-        rules.mk
-    Makefile
-example/
-    (Code for Ray Tracing tutorials)
-    (Constructed using this makefile system)
+
+`main_files` contains the files you copy into your own project.
+
+`example` is a working sample project using the same build files.
+
+## Quick Start With The Example
+
+From the repository root:
+
+```sh
+cd example
+make
 ```
 
-## File Placement
+This compiles the example project and creates the executable in `build`.
 
-- All files except `Makefile` should be placed inside a folder named `tacomake`. This is to ensure that the configuration makefile code is kept separate and independent.
-- The `Makefile` file should be placed in the root directory, outside of the `tacomake` folder.
+To build and run it:
 
-## Configuring `Makefile`
+```sh
+make run
+```
 
-The `Makefile` file allows you to configure essential paths and settings:
+To remove generated object files, dependency files, and the executable:
 
-Note: When assigning multiple values to the same variable in a Makefile, remember to add a backslash ( \ ) at the end of each line.
+```sh
+make clean
+```
 
-- **Directories**:
+To remove the full generated `objs` and `build` directories:
 
-  - `src_dir`: Directory for source files. This directory is where your main source code files are located.
+```sh
+make clean-all
+```
 
-    - *Example*: `src_dir := src`
+## Using TacoMake In Your Own Project
 
-  - `include_dir`: Directory for header files. Include files are placed here for organizing reusable code.
+Create or open a C/C++ project directory, then copy these files from `main_files` into the root of your project:
 
-    - *Example*: `include_dir := include`
+```text
+your-project/
++-- Makefile
++-- tacomake/
+    +-- commands.mk
+    +-- functions.mk
+    +-- platform.mk
+    +-- rules.mk
+```
 
-  - `assets_dir`: Directory containing resources for the program, such as images, configuration files, and dynamic link libraries (`.dll` or `.so`). During `make run`, these assets will be copied to the `build` directory.
+Your project should then look something like this:
 
-    - *Example*: `assets_dir := assets`
+```text
+your-project/
++-- Makefile
++-- tacomake/
++-- src/
++-- include/
++-- lib/
++-- assets/
+```
 
-  - `target_dir`: Directory for build output. This is where the compiled executable will be placed.
+If the project folders do not exist yet, configure the directory names in `Makefile`, then run:
 
-    - *Example*: `target_dir := build`
+```sh
+make init
+```
 
-  - `obj_dir`: Directory for compiled object files. Keeping object files separate helps manage the compilation process more cleanly.
+This creates the directories configured by:
 
-    - *Example*: `obj_dir := objs`
+- `src_dir`
+- `include_dir`
+- `lib_dir`
+- `assets_dir`
 
-  - `lib_dir`: Directory for libraries used by the program. This is where additional static or dynamic libraries can be placed for linking.
+The `build` and `objs` directories are created automatically when needed.
 
-    - *Example*: `lib_dir := lib`
+## Basic Tutorial
 
-  Note: All directories in `lib_dir` will automatically be added with `-L` during the linking stage. Therefore, you only need to specify the library names in the `libraries` variable.
+This section walks through a minimal project from an empty directory.
 
-  The directories specified in `src_dir`, `include_dir`, `assets_dir`, and `lib_dir` will be created in the root directory when running the `make init` command.
+### 1. Copy TacoMake Files
 
-- **External Directories**:
+Copy `main_files/Makefile` and `main_files/tacomake` into your project root:
 
-  - `ext_include_dir`: Specifies external include directories that are not part of the project's internal structure. These directories won't be created when using the `make init` command, so ensure they exist and are correctly set.
+```text
+hello-taco/
++-- Makefile
++-- tacomake/
+```
 
-    - *Example*: `ext_include_dir := /path/to/external/includes`
+### 2. Initialize The Folders
 
-  - `ext_lib_dir`: Specifies external library directories for linking against libraries outside of the project. Similar to `ext_include_dir`, these directories will not be created during the `make init` command and must be managed separately.
+Run:
 
-    - *Example*: `ext_lib_dir := /path/to/external/libs`
+```sh
+make init
+```
 
-- **Compiler Settings**:
+You should now have:
 
-  - `compiler`: Specifies the compiler to use (e.g., `g++`).
+```text
+hello-taco/
++-- Makefile
++-- tacomake/
++-- src/
++-- include/
++-- lib/
++-- assets/
+```
 
-    - *Example*: `compiler := g++`
+### 3. Add Source Code
 
-  - `cpp_ver`: Sets the C++ version standard (e.g., `c++20`).
+Create `src/main.cpp`:
 
-    - *Example*: `cpp_ver := c++20`
+```cpp
+#include <iostream>
 
-  - `compile_flags`: Flags for the compiler to control warnings and debugging.
+int main()
+{
+    std::cout << "Hello from TacoMake!\n";
+    return 0;
+}
+```
 
-    - *Example*: `compile_flags := -g -Wall -Wextra -MMD -MP`
+### 4. Build
 
-  - `macros`: Defines any macros that should be passed to the compiler. Note that the values in `macros` will automatically be prefixed with `-D`, so you only need to provide the macro name.
+Run:
 
-    - *Example*: `macros := DEBUG`
+```sh
+make
+```
 
-  - `linker_flags`: Flags for the linker, if additional options are needed during linking.
+On Windows, this creates:
 
-    - *Example*: `linker_flags := -static-libgcc`
+```text
+build/main.exe
+```
 
-  - `libraries`: Specifies any libraries to link against, which are automatically prefixed with `-l` (e.g., `pthread`).
+On Linux, this creates:
 
-    - *Example*: `libraries := pthread opengl32 gdi32`
+```text
+build/main
+```
 
-    Note: Only add the library names in the `libraries` variable without the `lib` prefix or `.a`/`.lib` suffix, such as `opengl32` or `gdi32`.
+### 5. Run
 
-  - `src_suffix`: Used to specify which file extensions in the `src_dir` folder should be treated as source files. Ensure that the specified extensions are supported by the compiler being used. Unless necessary, it is not recommended for users to modify this setting. Default extensions are `.cpp`, `.cxx`, `.cp`, `.c++`, `.CPP`, `.cc`, `.c`, `.C`.
+Run:
 
-Modify these paths and settings as needed to match your project structure.
+```sh
+make run
+```
 
-## Make Commands
+TacoMake enters the `build` directory and runs the executable from there.
 
-This project offers five key `make` commands to simplify your workflow:
+### 6. Change The Executable Name
 
-### 1. `make init`
+Open `Makefile` and edit:
 
-Initializes the working environment. This command creates the necessary directories defined in `Makefile`. Ensure you have set up `src_dir`, `include_dir`, `lib_dir`, `obj_dir`, `target_dir`, and `assets_dir` appropriately before running this command.
+```make
+target := main
+```
 
-### 2. `make`
+For example:
 
-Compiles the source files to generate an executable without running it. Note that assets are **not** copied to the build directory during this step.
+```make
+target := hello
+```
 
-### 3. `make run`
+Now `make` will create `build/hello.exe` on Windows or `build/hello` on Linux.
 
-Compiles and runs the project. Before running, it also copies any updated assets from the `assets` directory to the `build` directory, including dynamic link libraries (`.dll` for Windows or `.so` for Linux). Use this to quickly compile and test the project.
+## Makefile Configuration
 
-### 4. `make clean`
+Most configuration is done at the top of `Makefile`.
 
-Removes all object files and the generated executable, providing a clean state for recompilation.
+### Target And Compiler
 
-### 5. `make clean-all`
+```make
+target := main
+compiler := g++
+cpp_ver := c++20
+```
 
-Deletes both `objs` and `build` folders, effectively removing everything generated during the build process. This is equivalent to removing the folders specified in `obj_dir` and `target_dir`.
+- `target` is the executable name without `.exe`.
+- `compiler` is the compiler command.
+- `cpp_ver` becomes the `-std=` flag, such as `-std=c++20`.
 
-## Using the Example Code
+### Project Directories
 
-In the **example** folder, you'll find source code from the popular **"Ray Tracing The Rest of Your Life"** tutorial series. This code is ideal for learning how to utilize the `make` commands effectively:
+```make
+target_dir  := build
+src_dir     := src
+include_dir := include
+lib_dir     := lib
+obj_dir     := objs
+assets_dir  := assets
+```
 
-- Use `make` to compile the example code.
-- Execute `make run` to compile and run it, observing how assets are handled.
-- Test the **`make clean`** and **`make clean-all`** commands to understand their effects.
+- `src_dir` contains source files.
+- `include_dir` contains project headers.
+- `lib_dir` contains project libraries.
+- `assets_dir` contains runtime files copied during `make run`.
+- `target_dir` contains the final executable and copied assets.
+- `obj_dir` contains generated object and dependency files.
 
-(Due to platform issues, adding link examples is not considered.)
+### External Include And Library Directories
 
-## Target Audience
+```make
+ext_include_dir :=
+ext_lib_dir     :=
+```
 
-This project is primarily targeted at C++ developers working on small to medium-sized projects who are looking for a simple and efficient way to manage their build process. It is particularly useful for developers who are new to using `make` or those who need a lightweight solution for single executable projects.
+Use these for directories outside your project.
 
-## Important Notes and Limitations
+Example:
 
-- This makefile system only allows compiling a single executable file. The source code containing the `main` function must be placed in the directory specified by `src_dir` for it to be detected.
-- Directory names containing spaces are strongly discouraged (In fact this always causes problems, consider fixing it in the future).
-- Since this project uses native `make` functions to traverse directories, empty directories will be ignored. Please ensure that the absence of empty directories is acceptable for your use case.
-- This makefile system has been thoroughly tested only on **Windows 11**. It should work on some Linux systems (tested successfully on **Debian GNU/Linux 12**), but extensive testing on other environments has not been conducted.
+```make
+ext_include_dir := C:/libs/some-library/include
+ext_lib_dir     := C:/libs/some-library/lib
+```
 
-## Contributing
+These directories are not created by `make init`.
 
-Feel free to fork and modify this project to suit your needs. Pull requests are welcome if you have improvements or additional features you'd like to share. However, please note that I may not actively monitor updates, so you might not receive a prompt response. Also, since English is not my native language, my responses might be delayed.
+### Compiler Flags
 
-When contributing, please ensure that your changes are well-documented and thoroughly tested. If you are adding new functionality, consider including example usage to demonstrate its utility.
+```make
+compile_flags := -g -Wall -Wextra -MMD -MP
+```
+
+These flags are passed when compiling each source file.
+
+TacoMake also appends:
+
+- `-std=$(cpp_ver)`
+- `-I` flags for `include_dir` and `ext_include_dir`
+- `-D` flags for every entry in `macros`
+
+### Macros
+
+```make
+macros :=
+```
+
+Do not include `-D` yourself.
+
+Example:
+
+```make
+macros := DEBUG USE_FAST_MATH
+```
+
+This becomes:
+
+```text
+-DDEBUG -DUSE_FAST_MATH
+```
+
+### Linker Flags And Libraries
+
+```make
+linker_flags :=
+libraries :=
+```
+
+Use `linker_flags` for raw linker options.
+
+Use `libraries` for library names. Do not include the `-l` prefix.
+
+Example:
+
+```make
+libraries := pthread opengl32 gdi32
+```
+
+This becomes:
+
+```text
+-lpthread -lopengl32 -lgdi32
+```
+
+TacoMake also scans `lib_dir` and `ext_lib_dir` recursively and adds their subdirectories as `-L` paths.
+
+### Source File Extensions
+
+```make
+src_suffix := .cpp .cxx .cp .c++ .CPP .cc .c .C
+```
+
+Files under `src_dir` with these suffixes are compiled. Most users should leave this unchanged.
+
+## Commands
+
+### `make`
+
+Builds the executable.
+
+This compiles source files from `src_dir`, writes object files to `obj_dir`, then links the executable into `target_dir`.
+
+### `make run`
+
+Builds the executable, copies assets from `assets_dir` into `target_dir`, then runs the executable from inside `target_dir`.
+
+Use this when your program expects runtime files beside the executable.
+
+### `make init`
+
+Creates the basic project directories configured in `Makefile`:
+
+- `src_dir`
+- `include_dir`
+- `lib_dir`
+- `assets_dir`
+
+### `make clean`
+
+Deletes:
+
+- the built executable
+- generated object files
+- generated dependency files
+
+### `make clean-all`
+
+Deletes the full generated output directories:
+
+- `target_dir`
+- `obj_dir`
+
+## Asset Handling
+
+Files inside `assets_dir` are copied to `target_dir` when you run:
+
+```sh
+make run
+```
+
+For example:
+
+```text
+assets/images/earthmap.jpg
+```
+
+is copied to:
+
+```text
+build/images/earthmap.jpg
+```
+
+Assets are not copied by plain `make`.
+
+## Notes And Limitations
+
+- TacoMake is designed for one executable target.
+- The source file containing `main` must be somewhere under `src_dir`.
+- Directory names with spaces are strongly discouraged.
+- Empty directories are ignored by the recursive Make functions.
+- Library link order can matter. If a library does not link correctly, adjust `libraries` or use `linker_flags`.
+- The Windows support assumes GNU Make is running in a Windows environment where the `OS` variable is defined.
 
 ## License
 
-This project is open source under the MIT license. See the LICENSE file for more details.
-
-## Contact
-
-For any questions, please create an issue in the repository or contact the project maintainer.
-
-If you have specific feedback or need further clarification on using `TacoMake`, feel free to reach out. I'm always interested in hearing how others are using this system and what improvements could be made.
+TacoMake is released under the MIT License. See `LICENSE` for details.
